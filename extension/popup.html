@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Version Saver</title>
+  <style>
+    body {
+      font-family: system-ui, sans-serif;
+      padding: 16px;
+      min-width: 340px;
+      max-width: 440px;
+      max-height: 560px;
+      margin: 0;
+    }
+    .intro {
+      margin-bottom: 12px;
+      font-size: 13px;
+      color: #333;
+    }
+    .intro code { font-size: 12px; background: #f0f0f0; padding: 1px 4px; border-radius: 2px; }
+    .link-row { margin-bottom: 12px; }
+    a { color: #1976d2; text-decoration: none; font-size: 13px; }
+    a:hover { text-decoration: underline; }
+    h2 {
+      font-size: 14px;
+      font-weight: 600;
+      margin: 16px 0 8px;
+      color: #333;
+    }
+    h2:first-of-type { margin-top: 0; }
+    .section-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      margin: 16px 0 8px;
+    }
+    .section-head h2 { margin: 0; }
+    .btn-refresh {
+      padding: 4px 10px;
+      font-size: 12px;
+      background: #f5f5f5;
+      color: #333;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    .btn-refresh:hover { background: #eee; }
+    .btn-refresh:disabled { opacity: 0.6; cursor: not-allowed; }
+    .loading, .empty, .error {
+      font-size: 13px;
+      color: #666;
+      padding: 12px 0;
+    }
+    .error { color: #c62828; }
+    .version-list, .memory-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      max-height: 200px;
+      overflow-y: auto;
+    }
+    .version-item, .memory-item {
+      padding: 10px 12px;
+      margin-bottom: 8px;
+      background: #f8f9fa;
+      border-radius: 6px;
+      border: 1px solid #eee;
+      cursor: default;
+    }
+    .memory-item { border-left: 3px solid #ff9800; }
+    .version-item:hover, .memory-item:hover { background: #eef1f5; }
+    .version-item-clickable { cursor: pointer; }
+    .version-meta, .memory-meta {
+      font-size: 11px;
+      color: #666;
+      margin-bottom: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+    .version-thumb, .memory-thumb {
+      font-size: 12px;
+      color: #333;
+      line-height: 1.4;
+      word-break: break-all;
+      white-space: pre-wrap;
+    }
+    .btn-save {
+      padding: 4px 10px;
+      font-size: 12px;
+      background: #1976d2;
+      color: #fff;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+    .btn-save:hover { background: #1565c0; }
+    .btn-save:disabled { opacity: 0.6; cursor: not-allowed; }
+  </style>
+</head>
+<body>
+  <p class="intro">监听 <code>#chat-history</code> 变化，以 <code>window.location.href</code> 为名称保存到后端。</p>
+  <div class="link-row"><a href="#" id="open-options">打开设置</a> 配置 API 地址</div>
+
+  <h2>内存中的记录</h2>
+  <div id="memory-container">
+    <div id="memory-loading" class="loading" style="display:none;">加载中…</div>
+    <div id="memory-empty" class="empty" style="display:none;">暂无该页面的内存记录</div>
+    <ul id="memory-list" class="memory-list" style="display:none;"></ul>
+  </div>
+
+  <div class="section-head">
+    <h2>已保存的版本</h2>
+    <button type="button" id="btn-refresh-saved" class="btn-refresh" title="刷新列表">刷新</button>
+  </div>
+  <div id="list-container">
+    <div id="list-loading" class="loading" style="display:none;">加载中…</div>
+    <div id="list-empty" class="empty" style="display:none;">暂无该页面的历史版本</div>
+    <div id="list-error" class="error" style="display:none;"></div>
+    <ul id="version-list" class="version-list" style="display:none;"></ul>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>

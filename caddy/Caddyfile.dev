@@ -1,0 +1,29 @@
+{
+    # 自动HTTPS（可选，开发环境可以关闭）
+    auto_https off
+}
+
+# 统一入口（开发环境）
+:80 {
+    # API 请求代理到后端
+    reverse_proxy /api/* app:8080 {
+        header_up Host {host}
+        header_up X-Real-IP {remote}
+        header_up X-Forwarded-For {remote}
+        header_up X-Forwarded-Proto {scheme}
+    }
+
+    # 其他所有请求代理到前端（Vite开发服务器）
+    reverse_proxy client:5173 {
+        header_up Host {host}
+        header_up X-Real-IP {remote}
+        header_up X-Forwarded-For {remote}
+        header_up X-Forwarded-Proto {scheme}
+    }
+
+    # 日志
+    log {
+        output stdout
+        format console
+    }
+}

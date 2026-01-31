@@ -1,0 +1,257 @@
+.version-list-container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.version-list-header {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.version-list-header h2 {
+  margin: 0;
+  color: #333;
+}
+
+.version-list-name {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.version-list-name label {
+  color: #666;
+  font-size: 14px;
+  white-space: nowrap;
+}
+
+.version-name-input,
+.version-name-select {
+  padding: 6px 12px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 14px;
+  min-width: 180px;
+}
+
+.version-name-select {
+  cursor: pointer;
+  background-color: #fff;
+}
+
+.version-name-input:focus,
+.version-name-select:focus {
+  outline: none;
+  border-color: #1976d2;
+}
+
+.version-stats {
+  color: #666;
+  font-size: 14px;
+}
+
+.hint {
+  padding: 12px;
+  color: #666;
+  font-size: 14px;
+  background: #f5f5f5;
+  border-radius: 4px;
+  margin: 10px 0;
+}
+
+.version-name {
+  font-size: 12px;
+  color: #1976d2;
+  margin-left: 8px;
+}
+
+.loading,
+.error {
+  padding: 20px;
+  text-align: center;
+  margin: 20px 0;
+}
+
+.error {
+  color: #d32f2f;
+  background-color: #ffebee;
+  border-radius: 4px;
+}
+
+.version-list-layout {
+  display: grid;
+  grid-template-columns: 400px 1fr;
+  gap: 20px;
+  height: calc(100vh - 200px);
+}
+
+.version-list-sidebar {
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.version-items {
+  flex: 1;
+  overflow-y: auto;
+  padding: 10px;
+}
+
+.version-item {
+  padding: 12px;
+  margin-bottom: 10px;
+  border: 1px solid #e0e0e0;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s;
+  background-color: #fff;
+}
+
+.version-item:hover {
+  border-color: #1976d2;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.version-item.active {
+  border-color: #1976d2;
+  background-color: #e3f2fd;
+}
+
+.version-item-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.version-id {
+  font-weight: 600;
+  color: #1976d2;
+}
+
+.version-date {
+  font-size: 12px;
+  color: #666;
+}
+
+.version-preview {
+  font-size: 13px;
+  color: #555;
+  margin-bottom: 6px;
+  line-height: 1.4;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.version-meta {
+  font-size: 11px;
+  color: #999;
+}
+
+.version-detail {
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  overflow: hidden;
+  background-color: #fff;
+}
+
+.version-detail-content {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.version-detail-header {
+  padding: 20px;
+  border-bottom: 1px solid #e0e0e0;
+  background-color: #f5f5f5;
+}
+
+.version-detail-header h3 {
+  margin: 0 0 12px 0;
+  color: #333;
+}
+
+.version-detail-meta {
+  display: flex;
+  gap: 20px;
+  font-size: 13px;
+  color: #666;
+}
+
+.version-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 20px;
+}
+
+.version-content pre {
+  margin: 0;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+  font-size: 14px;
+  line-height: 1.6;
+  color: #333;
+}
+
+.version-detail-placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  color: #999;
+  font-size: 16px;
+}
+
+.pagination {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px;
+  border-top: 1px solid #e0e0e0;
+  background-color: #f9f9f9;
+}
+
+.pagination button {
+  padding: 8px 16px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  background-color: #fff;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.pagination button:hover:not(:disabled) {
+  background-color: #f0f0f0;
+  border-color: #1976d2;
+}
+
+.pagination button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.pagination span {
+  font-size: 14px;
+  color: #666;
+}
+
+/* 响应式设计 */
+@media (max-width: 1024px) {
+  .version-list-layout {
+    grid-template-columns: 1fr;
+    height: auto;
+  }
+
+  .version-list-sidebar {
+    max-height: 400px;
+  }
+}

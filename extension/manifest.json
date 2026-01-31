@@ -1,0 +1,28 @@
+{
+  "manifest_version": 3,
+  "name": "Version Saver",
+  "version": "0.0.1",
+  "description": "监听页面内容变化，自动将页面文本保存到 Version Saver 后端",
+  "permissions": [
+    "storage",
+    "activeTab",
+    "tabs"
+  ],
+  "host_permissions": [
+    "<all_urls>",
+    "http://localhost:8080/*",
+    "http://localhost/*"
+  ],
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content.js"],
+      "run_at": "document_idle"
+    }
+  ],
+  "options_page": "options.html",
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "Version Saver"
+  }
+}
