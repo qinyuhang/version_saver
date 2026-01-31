@@ -50,9 +50,37 @@
   border-color: #1976d2;
 }
 
+.version-list-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
 .version-stats {
   color: #666;
   font-size: 14px;
+}
+
+.version-refresh-btn {
+  padding: 6px 14px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  background-color: #fff;
+  font-size: 14px;
+  color: #333;
+  cursor: pointer;
+  transition: background-color 0.2s, border-color 0.2s;
+}
+
+.version-refresh-btn:hover:not(:disabled) {
+  background-color: #f5f5f5;
+  border-color: #1976d2;
+  color: #1976d2;
+}
+
+.version-refresh-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
 
 .hint {

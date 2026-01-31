@@ -11,52 +11,12 @@
 - ✅ React + TypeScript 前端界面
 - ✅ Docker容器化部署（前后端分离）
 
-## API接口
+## API 文档
 
-### 1. 保存文本（创建新版本）
-```http
-POST /api/v1/save
-Content-Type: application/json
+接口规范使用 [OpenAPI 3.0](https://spec.openapis.org/oas/v3.0.3) 定义，见项目根目录 **`openapi.yaml`**。
 
-{
-  "content": "你的长文本内容..."
-}
-```
-
-响应：
-```json
-{
-  "id": 1,
-  "created_at": "2026-01-28T10:00:00Z",
-  "updated_at": "2026-01-28T10:00:00Z",
-  "content": "你的长文本内容..."
-}
-```
-
-### 2. 获取最新版本
-```http
-GET /api/v1/latest
-```
-
-### 3. 根据ID获取版本
-```http
-GET /api/v1/version/:id
-```
-
-### 4. 列出所有版本
-```http
-GET /api/v1/versions?limit=50&offset=0
-```
-
-响应：
-```json
-{
-  "versions": [...],
-  "total": 100,
-  "limit": 50,
-  "offset": 0
-}
-```
+- **查看文档**：可使用 [Swagger Editor](https://editor.swagger.io/) 或 [Redoc](https://redocly.github.io/redoc/) 打开 `openapi.yaml` 浏览接口与类型。
+- **前端接口**：前端 TypeScript 类型与 API 客户端由 OpenAPI 自动生成（见下方「前端 API 生成」）。
 
 ## 快速开始
 
@@ -171,19 +131,30 @@ docker-compose -f docker-compose.dev.yml up -d postgres
 └── docker-compose.yml     # Docker编排配置
 ```
 
+### 前端 API 生成
+
+前端从 OpenAPI 规范自动生成类型与 API 客户端，保证与后端接口一致。
+
+```bash
+cd client
+npm run generate:api
+```
+
+生成结果在 `client/src/api/generated/`（类型与 SDK）。修改 `openapi.yaml` 后需重新执行上述命令。
+
 ## 测试示例
 
-使用curl测试API：
+使用 curl 快速验证 API（接口定义见 `openapi.yaml`）：
 
 ```bash
 # 保存文本
 curl -X POST http://localhost:8080/api/v1/save \
   -H "Content-Type: application/json" \
-  -d '{"content": "这是第一版内容"}'
+  -d '{"content": "这是第一版内容", "name": "测试文档"}'
 
-# 获取最新版本
-curl http://localhost:8080/api/v1/latest
+# 根据名称获取最新版本
+curl "http://localhost:8080/api/v1/latest?name=测试文档"
 
-# 列出所有版本
-curl http://localhost:8080/api/v1/versions
+# 根据名称列出版本
+curl "http://localhost:8080/api/v1/versions?name=测试文档"
 ```

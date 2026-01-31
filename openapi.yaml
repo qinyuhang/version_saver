@@ -1,0 +1,238 @@
+openapi: 3.0.3
+info:
+  title: Version Saver API
+  description: 文本版本管理 HTTP 服务，支持长文本的保存与按名称的版本检索。
+  version: 1.0.0
+
+servers:
+  - url: http://localhost:8080/api/v1
+    description: 开发/本地
+  - url: /api/v1
+    description: 生产（相对路径，由 Caddy 统一入口）
+
+paths:
+  /save:
+    post:
+      summary: 保存文本（创建新版本）
+      operationId: saveText
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SaveTextRequest'
+      responses:
+        '201':
+          description: 创建成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Version'
+        '400':
+          description: 请求参数无效
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: 服务端错误
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /versions:
+    get:
+      summary: 根据名称列出版本（分页）
+      operationId: listVersions
+      parameters:
+        - name: name
+          in: query
+          required: true
+          schema:
+            type: string
+          description: 文本名称
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 50
+        - name: offset
+          in: query
+          schema:
+            type: integer
+            default: 0
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListVersionsResponse'
+        '400':
+          description: 缺少 name
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: 服务端错误
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /version/{id}:
+    get:
+      summary: 根据 ID 获取版本
+      operationId: getVersion
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Version'
+        '400':
+          description: 无效的 ID
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: 版本不存在
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /latest:
+    get:
+      summary: 根据名称获取最新版本
+      operationId: getLatest
+      parameters:
+        - name: name
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Version'
+        '400':
+          description: 缺少 name
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: 无版本
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /names:
+    get:
+      summary: 获取所有不重复的名称列表
+      operationId: listNames
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NamesResponse'
+        '500':
+          description: 服务端错误
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+components:
+  schemas:
+    Version:
+      type: object
+      required:
+        - id
+        - name
+        - version_num
+        - created_at
+        - updated_at
+        - content
+      properties:
+        id:
+          type: integer
+          format: int64
+        name:
+          type: string
+        version_num:
+          type: integer
+          description: 该 name 下的第几个版本，从 1 递增
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+        content:
+          type: string
+          description: 长文本内容
+
+    SaveTextRequest:
+      type: object
+      required:
+        - content
+        - name
+      properties:
+        content:
+          type: string
+        name:
+          type: string
+
+    ListVersionsResponse:
+      type: object
+      required:
+        - versions
+        - total
+        - limit
+        - offset
+      properties:
+        versions:
+          type: array
+          items:
+            $ref: '#/components/schemas/Version'
+        total:
+          type: integer
+        limit:
+          type: integer
+        offset:
+          type: integer
+
+    NamesResponse:
+      type: object
+      required:
+        - names
+      properties:
+        names:
+          type: array
+          items:
+            type: string
+
+    Error:
+      type: object
+      properties:
+        error:
+          type: string

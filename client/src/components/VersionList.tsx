@@ -41,8 +41,8 @@ export function VersionList({ currentName }: VersionListProps) {
     }
   };
 
-  // 加载名称列表（下拉用），并合并 URL 中的 name 以便从链接打开时能选中
-  useEffect(() => {
+  const loadNames = () => {
+    setNamesLoading(true);
     apiClient.listNames().then((list) => {
       const params = new URLSearchParams(window.location.search);
       const nameParam = params.get('name');
@@ -53,6 +53,16 @@ export function VersionList({ currentName }: VersionListProps) {
       setNames(list);
       setNamesLoading(false);
     }).catch(() => setNamesLoading(false));
+  };
+
+  const handleRefresh = () => {
+    loadNames();
+    loadVersions();
+  };
+
+  // 加载名称列表（下拉用），并合并 URL 中的 name 以便从链接打开时能选中
+  useEffect(() => {
+    loadNames();
   }, []);
 
   useEffect(() => {
@@ -121,8 +131,17 @@ export function VersionList({ currentName }: VersionListProps) {
             ))}
           </select>
         </div>
-        <div className="version-stats">
-          共 {total} 个版本
+        <div className="version-list-actions">
+          <span className="version-stats">共 {total} 个版本</span>
+          <button
+            type="button"
+            className="version-refresh-btn"
+            onClick={handleRefresh}
+            disabled={loading || namesLoading}
+            title="刷新名称与版本列表"
+          >
+            刷新
+          </button>
         </div>
       </div>
 
