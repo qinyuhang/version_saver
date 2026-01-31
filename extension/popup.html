@@ -99,11 +99,20 @@
     }
     .btn-save:hover { background: #1565c0; }
     .btn-save:disabled { opacity: 0.6; cursor: not-allowed; }
+    .popup-options { margin-bottom: 8px; }
+    .switch-label { display: flex; align-items: center; gap: 8px; cursor: pointer; font-size: 13px; font-weight: 500; }
+    .switch-label input[type="checkbox"] { width: auto; margin: 0; }
   </style>
 </head>
 <body>
   <p class="intro">监听 <code>#chat-history</code> 变化，以 <code>window.location.href</code> 为名称保存到后端。</p>
-  <div class="link-row"><a href="#" id="open-options">打开设置</a> 配置 API 地址</div>
+  <div class="popup-options">
+    <label class="switch-label">
+      <input type="checkbox" id="auto-save" checked>
+      <span>启用自动保存</span>
+    </label>
+    <div class="link-row"><a href="#" id="open-options">打开设置</a> 配置 API 地址</div>
+  </div>
 
   <h2>内存中的记录</h2>
   <div id="memory-container">

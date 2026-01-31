@@ -1,17 +1,22 @@
 {
   "manifest_version": 3,
   "name": "Version Saver",
-  "version": "0.0.1",
+  "version": "0.0.3",
   "description": "监听页面内容变化，自动将页面文本保存到 Version Saver 后端",
   "permissions": [
     "storage",
     "activeTab",
     "tabs"
   ],
+  "background": {
+    "service_worker": "background.js"
+  },
   "host_permissions": [
     "<all_urls>",
     "http://localhost:8080/*",
-    "http://localhost/*"
+    "http://localhost/*",
+    "http://127.0.0.1:8080/*",
+    "http://127.0.0.1/*"
   ],
   "content_scripts": [
     {

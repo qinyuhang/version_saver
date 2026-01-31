@@ -2,10 +2,9 @@
   'use strict';
 
   const DEBOUNCE_MS = 2000;
-  const STORAGE_KEY_API = 'version-saver-api-url';
   const STORAGE_KEY_MEMORY = 'version-saver-memory';
+  const STORAGE_KEY_AUTO_SAVE = 'version-saver-auto-save';
   const MEMORY_MAX_PER_URL = 50;
-  const DEFAULT_API = 'http://localhost:8080/api/v1';
 
   let debounceTimer = null;
   let lastSentText = '';
@@ -13,10 +12,10 @@
   /** 用于检测「缩短」：上一次观测到的 #chat-history innerText */
   let lastContent = '';
 
-  function getApiBaseUrl() {
+  function isAutoSaveEnabled() {
     return new Promise((resolve) => {
-      chrome.storage.local.get([STORAGE_KEY_API], (result) => {
-        resolve(result[STORAGE_KEY_API] || DEFAULT_API);
+      chrome.storage.local.get([STORAGE_KEY_AUTO_SAVE], (result) => {
+        resolve(result[STORAGE_KEY_AUTO_SAVE] !== false);
       });
     });
   }
@@ -45,15 +44,17 @@
     });
   }
 
-  async function postSave(name, content) {
-    const apiBase = await getApiBaseUrl();
-    const url = apiBase.replace(/\/$/, '') + '/save';
-    const res = await fetch(url, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ name, content }),
+  /** 通过 background 发起保存请求，避免 content script 请求 localhost 触发混合内容限制 */
+  function postSave(name, content) {
+    return new Promise((resolve) => {
+      chrome.runtime.sendMessage({ type: 'SAVE', name, content }, (response) => {
+        if (chrome.runtime.lastError) {
+          resolve({ ok: false, error: chrome.runtime.lastError.message });
+          return;
+        }
+        resolve(response || { ok: false, error: '无响应' });
+      });
     });
-    return res;
   }
 
   /** 内容缩短时：立即把「缩短前」的内容保存为版本，并加入内存 */
@@ -71,8 +72,7 @@
         console.log('[Version Saver] 内容缩短，已保存缩短前版本:', name);
         showToast('内容缩短，已保存上一版本');
       } else {
-        const err = await res.json().catch(() => ({}));
-        showToast('保存失败: ' + (err.error || res.statusText));
+        showToast('保存失败: ' + (res.error || '未知错误'));
       }
     } catch (err) {
       console.warn('[Version Saver] 缩短时保存失败:', err);
@@ -98,9 +98,8 @@
         console.log('[Version Saver] 已保存版本:', name);
         showToast('已保存到 Version Saver');
       } else {
-        const err = await res.json().catch(() => ({}));
-        console.warn('[Version Saver] 保存失败:', res.status, err);
-        showToast('保存失败: ' + (err.error || res.statusText));
+        console.warn('[Version Saver] 保存失败:', res.error);
+        showToast('保存失败: ' + (res.error || '未知错误'));
       }
     } catch (err) {
       console.warn('[Version Saver] 请求失败:', err);
@@ -110,8 +109,10 @@
 
   function scheduleSave() {
     if (debounceTimer) clearTimeout(debounceTimer);
-    debounceTimer = setTimeout(() => {
+    debounceTimer = setTimeout(async () => {
       debounceTimer = null;
+      const enabled = await isAutoSaveEnabled();
+      if (!enabled) return;
       const current = getPageText();
       if (current.length < lastContent.length) {
         saveOnShorten(lastContent, current);
@@ -121,7 +122,9 @@
     }, DEBOUNCE_MS);
   }
 
-  function onMutation() {
+  async function onMutation() {
+    const enabled = await isAutoSaveEnabled();
+    if (!enabled) return;
     const current = getPageText();
     if (current.length < lastContent.length && lastContent.length > 0) {
       if (debounceTimer) clearTimeout(debounceTimer);
@@ -170,7 +173,7 @@
     }
     lastContent = getPageText();
 
-    const observer = new MutationObserver(onMutation);
+    const observer = new MutationObserver(() => { onMutation(); });
     observer.observe(target, {
       childList: true,
       subtree: true,

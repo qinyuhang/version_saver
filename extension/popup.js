@@ -3,6 +3,7 @@
 
   const STORAGE_KEY_API = 'version-saver-api-url';
   const STORAGE_KEY_MEMORY = 'version-saver-memory';
+  const STORAGE_KEY_AUTO_SAVE = 'version-saver-auto-save';
   const DEFAULT_API = 'http://localhost:8080/api/v1';
   const THUMB_HEAD = 10;
   const THUMB_TAIL = 10;
@@ -248,6 +249,14 @@
       if (btnRefresh) btnRefresh.disabled = false;
     });
   }
+
+  var autoSaveEl = document.getElementById('auto-save');
+  chrome.storage.local.get([STORAGE_KEY_AUTO_SAVE], function (result) {
+    autoSaveEl.checked = result[STORAGE_KEY_AUTO_SAVE] !== false;
+  });
+  autoSaveEl.addEventListener('change', function () {
+    chrome.storage.local.set({ [STORAGE_KEY_AUTO_SAVE]: autoSaveEl.checked });
+  });
 
   document.getElementById('open-options').addEventListener('click', function (e) {
     e.preventDefault();
