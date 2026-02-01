@@ -1,16 +1,16 @@
 (function () {
-  'use strict';
+  "use strict";
 
   const DEBOUNCE_MS = 2000;
-  const STORAGE_KEY_MEMORY = 'version-saver-memory';
-  const STORAGE_KEY_AUTO_SAVE = 'version-saver-auto-save';
+  const STORAGE_KEY_MEMORY = "version-saver-memory";
+  const STORAGE_KEY_AUTO_SAVE = "version-saver-auto-save";
   const MEMORY_MAX_PER_URL = 50;
 
   let debounceTimer = null;
-  let lastSentText = '';
+  let lastSentText = "";
   let lastHref = window.location.href;
   /** 用于检测「缩短」：上一次观测到的 #chat-history innerText */
-  let lastContent = '';
+  let lastContent = "";
 
   function isAutoSaveEnabled() {
     return new Promise((resolve) => {
@@ -20,21 +20,21 @@
     });
   }
 
-  const CHAT_HISTORY_ID = 'chat-history';
+  const CHAT_HISTORY_ID = "chat-history";
 
   function getPageText() {
     try {
       const el = document.getElementById(CHAT_HISTORY_ID);
-      if (!el) return '';
-      return el.innerText || '';
+      if (!el) return "";
+      return el.innerText || "";
     } catch (e) {
-      console.warn('[Version Saver] getPageText error:', e);
-      return '';
+      console.warn("[Version Saver] getPageText error:", e);
+      return "";
     }
   }
 
   function addToMemory(name, content) {
-    if (typeof content !== 'string' || !name) return;
+    if (typeof content !== "string" || !name) return;
     chrome.storage.local.get([STORAGE_KEY_MEMORY], (result) => {
       const store = result[STORAGE_KEY_MEMORY] || {};
       const list = store[name] || [];
@@ -47,13 +47,16 @@
   /** 通过 background 发起保存请求，避免 content script 请求 localhost 触发混合内容限制 */
   function postSave(name, content) {
     return new Promise((resolve) => {
-      chrome.runtime.sendMessage({ type: 'SAVE', name, content }, (response) => {
-        if (chrome.runtime.lastError) {
-          resolve({ ok: false, error: chrome.runtime.lastError.message });
-          return;
-        }
-        resolve(response || { ok: false, error: '无响应' });
-      });
+      chrome.runtime.sendMessage(
+        { type: "SAVE", name, content },
+        (response) => {
+          if (chrome.runtime.lastError) {
+            resolve({ ok: false, error: chrome.runtime.lastError.message });
+            return;
+          }
+          resolve(response || { ok: false, error: "无响应" });
+        },
+      );
     });
   }
 
@@ -69,14 +72,14 @@
       lastSentText = previousContent;
       lastHref = name;
       if (res.ok) {
-        console.log('[Version Saver] 内容缩短，已保存缩短前版本:', name);
-        showToast('内容缩短，已保存上一版本');
+        console.log("[Version Saver] 内容缩短，已保存缩短前版本:", name);
+        showToast("内容缩短，已保存上一版本");
       } else {
-        showToast('保存失败: ' + (res.error || '未知错误'));
+        showToast("保存失败: " + (res.error || "未知错误"));
       }
     } catch (err) {
-      console.warn('[Version Saver] 缩短时保存失败:', err);
-      showToast('保存失败: 请检查 API 与网络');
+      console.warn("[Version Saver] 缩短时保存失败:", err);
+      showToast("保存失败: 请检查 API 与网络");
       lastContent = currentContent;
     }
   }
@@ -95,15 +98,15 @@
         lastSentText = content;
         lastHref = name;
         addToMemory(name, content);
-        console.log('[Version Saver] 已保存版本:', name);
-        showToast('已保存到 Version Saver');
+        console.log("[Version Saver] 已保存版本:", name);
+        showToast("已保存到 Version Saver");
       } else {
-        console.warn('[Version Saver] 保存失败:', res.error);
-        showToast('保存失败: ' + (res.error || '未知错误'));
+        console.warn("[Version Saver] 保存失败:", res.error);
+        showToast("保存失败: " + (res.error || "未知错误"));
       }
     } catch (err) {
-      console.warn('[Version Saver] 请求失败:', err);
-      showToast('保存失败: 请检查 API 地址与网络');
+      console.warn("[Version Saver] 请求失败:", err);
+      showToast("保存失败: 请检查 API 地址与网络");
     }
   }
 
@@ -136,32 +139,32 @@
   }
 
   function showToast(message) {
-    const id = 'version-saver-toast';
+    const id = "version-saver-toast";
     let el = document.getElementById(id);
     if (!el) {
-      el = document.createElement('div');
+      el = document.createElement("div");
       el.id = id;
       Object.assign(el.style, {
-        position: 'fixed',
-        bottom: '24px',
-        right: '24px',
-        padding: '12px 20px',
-        background: '#333',
-        color: '#fff',
-        borderRadius: '8px',
-        fontSize: '14px',
-        zIndex: '2147483647',
-        fontFamily: 'sans-serif',
-        boxShadow: '0 4px 12px rgba(0,0,0,0.3)',
-        transition: 'opacity 0.3s',
+        position: "fixed",
+        bottom: "24px",
+        right: "24px",
+        padding: "12px 20px",
+        background: "#333",
+        color: "#fff",
+        borderRadius: "8px",
+        fontSize: "14px",
+        zIndex: "2147483647",
+        fontFamily: "sans-serif",
+        boxShadow: "0 4px 12px rgba(0,0,0,0.3)",
+        transition: "opacity 0.3s",
       });
       document.body.appendChild(el);
     }
     el.textContent = message;
-    el.style.opacity = '1';
+    el.style.opacity = "1";
     clearTimeout(el._hide);
     el._hide = setTimeout(() => {
-      el.style.opacity = '0';
+      el.style.opacity = "0";
     }, 3000);
   }
 
@@ -173,24 +176,26 @@
     }
     lastContent = getPageText();
 
-    const observer = new MutationObserver(() => { onMutation(); });
+    const observer = new MutationObserver(() => {
+      onMutation();
+    });
     observer.observe(target, {
       childList: true,
       subtree: true,
       characterData: true,
       characterDataOldValue: true,
       attributes: true,
-      attributeFilter: ['value', 'placeholder'],
+      attributeFilter: ["value", "placeholder"],
     });
 
     const checkHref = () => {
       if (window.location.href !== lastHref) {
         lastHref = window.location.href;
-        lastSentText = '';
+        lastSentText = "";
         lastContent = getPageText();
       }
     };
-    window.addEventListener('popstate', checkHref);
+    window.addEventListener("popstate", checkHref);
     const origPush = history.pushState;
     const origReplace = history.replaceState;
     if (origPush) {
@@ -206,12 +211,22 @@
       };
     }
 
-    console.log('[Version Saver] 已开始监听 #chat-history 变化');
+    console.log("[Version Saver] 已开始监听 #chat-history 变化");
   }
 
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', startObserving);
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", startObserving);
   } else {
     startObserving();
   }
+
+  chrome.runtime.onMessage.addListener(
+    function (request, sender, sendResponse) {
+      if (request.type === "GET_PAGE_CONTENT") {
+        const content = getPageText();
+        sendResponse({ content: content });
+      }
+      return true;
+    },
+  );
 })();

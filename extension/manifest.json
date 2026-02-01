@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Version Saver",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "监听页面内容变化，自动将页面文本保存到 Version Saver 后端",
   "permissions": [
     "storage",
